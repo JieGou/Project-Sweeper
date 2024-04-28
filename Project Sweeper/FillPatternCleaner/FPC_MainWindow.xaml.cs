@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System;
+using System.Collections.ObjectModel;
 
 namespace PKHL.ProjectSweeper.FillPatternCleaner
 {
@@ -10,13 +11,15 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-	{
-		public System.Collections.ObjectModel.ObservableCollection<FillPatternDefinition> TheCollection { get { return data; } }
-		private System.Collections.ObjectModel.ObservableCollection<FillPatternDefinition> data = null;
+    {
+        public ObservableCollection<FillPatternDefinition> TheCollection
+        { get { return data; } }
+        private ObservableCollection<FillPatternDefinition> data = null;
         private FillPatternDefinition nonePattern;
         private IList<FillPatternDefinition> selectedSStyles = null;
 
         private FillPatternDefinition _defaultPattern;
+
         public FillPatternDefinition defaultPattern
         {
             get
@@ -30,10 +33,10 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
             }
         }
 
-        public MainWindow(System.Collections.ObjectModel.ObservableCollection<FillPatternDefinition> _data, IList<FillPatternDefinition> _selectedSStyles)
-		{
-			InitializeComponent();
-			data = _data;
+        public MainWindow(ObservableCollection<FillPatternDefinition> _data, IList<FillPatternDefinition> _selectedSStyles)
+        {
+            InitializeComponent();
+            data = _data;
             nonePattern = ((FillPatternDefinition)theLeftList.Resources["NoneItem"]);
             defaultPattern = nonePattern;
             selectedSStyles = _selectedSStyles;
@@ -42,7 +45,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
         /// <summary>
         /// Shows only user selected fill pattern, if any
         /// </summary>
-        void theDataView_Filter(object sender, FilterEventArgs e)
+        private void theDataView_Filter(object sender, FilterEventArgs e)
         {
             if (selectedSStyles == null)
             {
@@ -63,101 +66,101 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
             e.Accepted = false;
         }
 
-        void ComboBoxDataView_Filter(object sender, FilterEventArgs e)
-		{
-			if(!this.IsLoaded)
-			{
-				e.Accepted = true;
-				return;
-			}
+        private void ComboBoxDataView_Filter(object sender, FilterEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                e.Accepted = true;
+                return;
+            }
 
             FillPatternDefinition fpd = e.Item as FillPatternDefinition;
-			if(fpd != null)
-				e.Accepted = !fpd.StyleToBeDeleted;
-			else
-				e.Accepted = true;
-		}
-		
-		void OkButton_Click(object sender, RoutedEventArgs e)
-		{
-			this.DialogResult = true;
-			this.Close();
-		}
-		
-		void CancelButton_Click(object sender, RoutedEventArgs e)
-		{
-			this.DialogResult = false;
-			this.Close();
-		}
-		
-		void DeleteAllButton_Click(object sender, RoutedEventArgs e)
-		{
-			foreach(FillPatternDefinition fpd in theLeftList.Items)
-			{
-				if(fpd.IsDeleteable && !fpd.StyleToBeDeleted)
-				{
-					fpd.StyleToBeDeleted = true;
-                    if(!fpd.StyleToBeConverted)
-					    fpd.NewStyle = defaultPattern;
-				}
-			}
-			((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();
-			((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
-		}
-		
-		void DeleteCheckBox_Checked(object sender, RoutedEventArgs e)
-		{
-			CheckBox cb = sender as CheckBox;
-			if (cb != null && cb.IsLoaded)
-			{
-				ListViewItem lvi = pkhCommon.WPF.Helpers.GetVisualParent<ListViewItem>(cb);
-                FillPatternDefinition lvi_fpd = lvi.Content as FillPatternDefinition;
-				foreach(FillPatternDefinition fpd in data)
-				{
-					if(fpd.NewStyle == lvi_fpd)
-						fpd.NewStyle = defaultPattern;
-				}
-                if(!lvi_fpd.StyleToBeConverted)
-				    lvi_fpd.NewStyle = defaultPattern;
-			}
-			((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();
-			((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
-		}
-		
-		void PurgeButton_Click(object sender, RoutedEventArgs e)
-		{
-			foreach(FillPatternDefinition fpd in theLeftList.Items)
-			{
-				if(fpd.NumberOfUses == 0 && fpd.IsDeleteable)
-				{
-					fpd.StyleToBeDeleted = true;
-                    if(!fpd.StyleToBeConverted)
+            if (fpd != null)
+                e.Accepted = !fpd.StyleToBeDeleted;
+            else
+                e.Accepted = true;
+        }
+
+        private void OkButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+            this.Close();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
+            this.Close();
+        }
+
+        private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (FillPatternDefinition fpd in theLeftList.Items)
+            {
+                if (fpd.IsDeleteable && !fpd.StyleToBeDeleted)
+                {
+                    fpd.StyleToBeDeleted = true;
+                    if (!fpd.StyleToBeConverted)
                         fpd.NewStyle = defaultPattern;
-				}
+                }
             }
             ((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();
             ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
-		}
-		
-		void MI_setDefaultStyle_Click(object sender, RoutedEventArgs e)
-		{
+        }
+
+        private void DeleteCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            if (cb != null && cb.IsLoaded)
+            {
+                ListViewItem lvi = pkhCommon.WPF.Helpers.GetVisualParent<ListViewItem>(cb);
+                FillPatternDefinition lvi_fpd = lvi.Content as FillPatternDefinition;
+                foreach (FillPatternDefinition fpd in data)
+                {
+                    if (fpd.NewStyle == lvi_fpd)
+                        fpd.NewStyle = defaultPattern;
+                }
+                if (!lvi_fpd.StyleToBeConverted)
+                    lvi_fpd.NewStyle = defaultPattern;
+            }
+            ((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();
+            ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
+        }
+
+        private void PurgeButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (FillPatternDefinition fpd in theLeftList.Items)
+            {
+                if (fpd.NumberOfUses == 0 && fpd.IsDeleteable)
+                {
+                    fpd.StyleToBeDeleted = true;
+                    if (!fpd.StyleToBeConverted)
+                        fpd.NewStyle = defaultPattern;
+                }
+            }
+            ((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();
+            ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
+        }
+
+        private void MI_setDefaultStyle_Click(object sender, RoutedEventArgs e)
+        {
             FillPatternDefinition lvi_fpd = theLeftList.SelectedItem as FillPatternDefinition;
-			if(defaultPattern.ItsId != -1)
+            if (defaultPattern.ItsId != -1)
                 defaultPattern.IsDeleteable = true;
             lvi_fpd.StyleToBeDeleted = false;
             lvi_fpd.IsDeleteable = false;
             lvi_fpd.NewStyle = null;
             defaultPattern = lvi_fpd;
             ((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();
-			((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
-		}
-		
-		void MI_Reset_Click(object sender, RoutedEventArgs e)
-		{
+            ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
+        }
+
+        private void MI_Reset_Click(object sender, RoutedEventArgs e)
+        {
             defaultPattern.IsDeleteable = true;
             defaultPattern = nonePattern;
             ((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();
-			((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
+            ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
         }
 
         private void MI_resetStyle_Click(object sender, RoutedEventArgs e)
@@ -165,7 +168,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
             FillPatternDefinition lvi_fpd = theLeftList.SelectedItem as FillPatternDefinition;
             if (lvi_fpd != null)
             {
-                if(lvi_fpd.IsDeleteable)
+                if (lvi_fpd.IsDeleteable)
                     lvi_fpd.StyleToBeDeleted = false;
                 lvi_fpd.NewStyle = null;
             }
@@ -286,7 +289,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Collections.Generic.List<TemplateWindow.StyleDataContainer> styleData = new List<TemplateWindow.StyleDataContainer>();
+            List<TemplateWindow.StyleDataContainer> styleData = new List<TemplateWindow.StyleDataContainer>();
             foreach (FillPatternDefinition fpd in TheCollection)
             {
                 if (fpd.StyleToBeConverted || fpd.StyleToBeDeleted)
@@ -309,7 +312,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
         {
             int appliedStyles = 0;
             System.Text.StringBuilder results = new System.Text.StringBuilder();
-            System.Collections.Generic.List<TemplateWindow.StyleDataContainer> styleData = null;
+            List<TemplateWindow.StyleDataContainer> styleData = null;
 
             TemplateWindow tw = new TemplateWindow(null, "FPC");
             tw.Owner = this;
@@ -331,7 +334,6 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                     FillPatternDefinition srcFpd = null;
                     foreach (FillPatternDefinition fpd in TheCollection)
                     {
-
                         if (fpd.StyleName.Equals(sdc.oldStyle, compareType))
                         {
                             srcFpd = fpd;
@@ -386,7 +388,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                     {
                         srcFpd.StyleToBeDeleted = sdc.deleteStyle;
                         results.AppendFormat(
-                            LocalizationProvider.GetLocalizedValue<string>("FPC_LOAD_RSLT_ChangeAndDel"),  //Set pattern "{0}" to be changed to "{1}" and then delete the style. 
+                            LocalizationProvider.GetLocalizedValue<string>("FPC_LOAD_RSLT_ChangeAndDel"),  //Set pattern "{0}" to be changed to "{1}" and then delete the style.
                             sdc.oldStyle,
                             sdc.newStyle);
                     }
@@ -399,7 +401,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                 }
                 results.AppendLine();
                 results.AppendFormat(
-                    LocalizationProvider.GetLocalizedValue<string>("FPC_LOAD_RSLT_Summary"),  //Template had {0} style items. {1} of them were successfully applied.", 
+                    LocalizationProvider.GetLocalizedValue<string>("FPC_LOAD_RSLT_Summary"),  //Template had {0} style items. {1} of them were successfully applied.",
                     styleData.Count,
                     appliedStyles);
                 ((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();

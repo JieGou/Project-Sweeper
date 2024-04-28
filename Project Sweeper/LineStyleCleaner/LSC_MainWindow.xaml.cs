@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Rdb = Autodesk.Revit.DB;
+using System.Collections.ObjectModel;
 
 namespace PKHL.ProjectSweeper.LineStyleCleaner
 {
@@ -12,14 +13,16 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
     /// </summary>
     public partial class MainWindow : Window
     {
-        public System.Collections.ObjectModel.ObservableCollection<LineStyleDefinition> TheCollection { get { return data; } }
-        private System.Collections.ObjectModel.ObservableCollection<LineStyleDefinition> data = null;
+        public ObservableCollection<LineStyleDefinition> TheCollection
+        { get { return data; } }
+        private ObservableCollection<LineStyleDefinition> data = null;
         private LineStyleDefinition deleteStyleLSD = null;
         private LineStyleDefinition theThinLineStyle = null;
         private IList<LineStyleDefinition> selectedSStyles = null;
         private Rdb.Document TheDoc = null;
 
         private LineStyleDefinition _defaultLineStyle;
+
         public LineStyleDefinition defaultLineStyle
         {
             get
@@ -33,7 +36,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
             }
         }
 
-        public MainWindow(System.Collections.ObjectModel.ObservableCollection<LineStyleDefinition> _data, IList<LineStyleDefinition> _selectedSStyles, ref Rdb.Document _theDoc)
+        public MainWindow(ObservableCollection<LineStyleDefinition> _data, IList<LineStyleDefinition> _selectedSStyles, ref Rdb.Document _theDoc)
         {
             InitializeComponent();
             TheDoc = _theDoc;
@@ -76,7 +79,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
         /// <summary>
         /// Shows only user selected line styles, if any
         /// </summary>
-        void theDataView_Filter(object sender, FilterEventArgs e)
+        private void theDataView_Filter(object sender, FilterEventArgs e)
         {
             if (selectedSStyles == null)
             {
@@ -97,7 +100,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
             e.Accepted = false;
         }
 
-        void ComboBoxDataView_Filter(object sender, FilterEventArgs e)
+        private void ComboBoxDataView_Filter(object sender, FilterEventArgs e)
         {
             if (!this.IsLoaded)
             {
@@ -117,19 +120,19 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
                 e.Accepted = true;
         }
 
-        void OkButton_Click(object sender, RoutedEventArgs e)
+        private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
             this.Close();
         }
 
-        void CancelButton_Click(object sender, RoutedEventArgs e)
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
             this.Close();
         }
 
-        void DeleteAllButton_Click(object sender, RoutedEventArgs e)
+        private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
         {
             theLeftList.BeginInit();
             foreach (LineStyleDefinition lsd in data)
@@ -149,7 +152,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
             ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
         }
 
-        void DeleteCheckBox_Checked(object sender, RoutedEventArgs e)
+        private void DeleteCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox cb = sender as CheckBox;
             if (cb != null && cb.IsLoaded)
@@ -168,7 +171,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
             ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
         }
 
-        void PurgeButton_Click(object sender, RoutedEventArgs e)
+        private void PurgeButton_Click(object sender, RoutedEventArgs e)
         {
             theLeftList.BeginInit();
             foreach (LineStyleDefinition lsd in data)
@@ -188,7 +191,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
             ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
         }
 
-        void MI_setDefaultStyle_Click(object sender, RoutedEventArgs e)
+        private void MI_setDefaultStyle_Click(object sender, RoutedEventArgs e)
         {
             LineStyleDefinition lvi_lsd = theLeftList.SelectedItem as LineStyleDefinition;
             defaultLineStyle.IsDeleteable = true;
@@ -199,7 +202,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
             ((CollectionViewSource)theLeftList.Resources["theComboBoxDataView"]).View.Refresh();
         }
 
-        void MI_Reset_Click(object sender, RoutedEventArgs e)
+        private void MI_Reset_Click(object sender, RoutedEventArgs e)
         {
             defaultLineStyle.IsDeleteable = true;
             defaultLineStyle = deleteStyleLSD;
@@ -279,7 +282,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
             LineStyleDefinition lvi_lsd = lvi.Content as LineStyleDefinition;
 
             System.Diagnostics.Debug.Print("ComboBox_SelectionChanged doing something.");
-            if(cb_lsd.NewStyle != null && cb_lsd.NewStyle.Equals(lvi_lsd)) //changing to a style set to change to this style
+            if (cb_lsd.NewStyle != null && cb_lsd.NewStyle.Equals(lvi_lsd)) //changing to a style set to change to this style
             {
                 Autodesk.Revit.UI.TaskDialog td = new Autodesk.Revit.UI.TaskDialog("Warning");
                 td.MainIcon = Autodesk.Revit.UI.TaskDialogIcon.TaskDialogIconWarning;
@@ -356,7 +359,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Collections.Generic.List<TemplateWindow.StyleDataContainer> styleData = new List<TemplateWindow.StyleDataContainer>();
+            List<TemplateWindow.StyleDataContainer> styleData = new List<TemplateWindow.StyleDataContainer>();
             foreach (LineStyleDefinition frtd in TheCollection)
             {
                 if (frtd.StyleToBeConverted || frtd.StyleToBeDeleted)
@@ -379,7 +382,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
         {
             int appliedStyles = 0;
             System.Text.StringBuilder results = new System.Text.StringBuilder();
-            System.Collections.Generic.List<TemplateWindow.StyleDataContainer> styleData = null;
+            List<TemplateWindow.StyleDataContainer> styleData = null;
 
             TemplateWindow tw = new TemplateWindow(null, "LSC");
             tw.Owner = this;
@@ -401,7 +404,6 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
                     LineStyleDefinition srcFrtd = null;
                     foreach (LineStyleDefinition frtd in TheCollection)
                     {
-
                         if (frtd.StyleName.Equals(sdc.oldStyle, compareType))
                         {
                             srcFrtd = frtd;
@@ -469,7 +471,7 @@ namespace PKHL.ProjectSweeper.LineStyleCleaner
                 }
                 results.AppendLine();
                 results.AppendFormat(
-                    LocalizationProvider.GetLocalizedValue<string>("FPC_LOAD_RSLT_Summary"),  //Template had {0} style items. {1} of them were successfully applied.", 
+                    LocalizationProvider.GetLocalizedValue<string>("FPC_LOAD_RSLT_Summary"),  //Template had {0} style items. {1} of them were successfully applied.",
                     styleData.Count,
                     appliedStyles);
                 ((CollectionViewSource)this.Resources["theDataView"]).View.Refresh();

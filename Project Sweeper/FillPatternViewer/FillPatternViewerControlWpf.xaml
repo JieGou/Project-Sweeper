@@ -1,28 +1,19 @@
 ﻿<UserControl
-  x:Class="PKHL.ProjectSweeper.FillPatternViewer.FillPatternViewer"
-  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:Converters="clr-namespace:PKHL.ProjectSweeper.FillPatternViewer"
-  mc:Ignorable="d"
-  d:DesignHeight="300" d:DesignWidth="300">
+    x:Class="PKHL.ProjectSweeper.FillPatternViewer.FillPatternViewer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Converters="clr-namespace:PKHL.ProjectSweeper.FillPatternViewer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
 
-  <Grid Name="_grid"
-        ToolTip="{Binding Path=FillPattern.Name, 
-          RelativeSource={RelativeSource 
-            AncestorType={x:Type UserControl}}}">
+    <Grid Name="_grid" ToolTip="{Binding Path=FillPattern.Name, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
 
-    <Grid.Resources>
-      <Converters:BitmapToImageSourceConverter
-        x:Key="BitmapToImageSourceConverter"/>
-
-    </Grid.Resources>
-    <Image Source="{Binding Path=FillPatternImage, 
-             RelativeSource={RelativeSource 
-             AncestorType={x:Type UserControl}},                 
-             Converter={StaticResource BitmapToImageSourceConverter}}"
-           Stretch="None"/>
-
-  </Grid>
+        <Grid.Resources>
+            <Converters:BitmapToImageSourceConverter x:Key="BitmapToImageSourceConverter" />
+        </Grid.Resources>
+        <Image Source="{Binding Path=FillPatternImage, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource BitmapToImageSourceConverter}}" Stretch="None" />
+    </Grid>
 </UserControl>

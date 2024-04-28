@@ -20,7 +20,10 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
         public int RegionUses { get; set; }
         private List<AssetDefinition> OwnerAssets = null;
         private Units projectUnits = null;
-        private enum pattType { Complex, Simple_Crosshatch, Simple_Parallel_Lines };
+
+        private enum pattType
+        { Complex, Simple_Crosshatch, Simple_Parallel_Lines };
+
         private pattType _pattType = pattType.Simple_Parallel_Lines;
         private string _PatternType = null;
 
@@ -36,7 +39,8 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
         }
 
         private int _familyUses { get; set; }
-        public int FamilyUses { get { return _familyUses; } }
+        public int FamilyUses
+        { get { return _familyUses; } }
 
         /// <summary>
         /// Return localized version of Model or Drafting
@@ -59,7 +63,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                 if (thePattern == null)
                     return null;
                 if (_PatternType == null)
-                _PatternType = LocalizationProvider.GetLocalizedValue<string>(_pattType.ToString());
+                    _PatternType = LocalizationProvider.GetLocalizedValue<string>(_pattType.ToString());
                 return _PatternType;
             }
         }
@@ -73,7 +77,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                 if (thePattern == null)
                     return null;
 
-                return UnitFormatUtils.Format(projectUnits, UnitType.UT_Angle, thePattern.GetFillGrid(0).Angle, false, false);
+                return UnitFormatUtils.Format(projectUnits, SpecTypeId.Angle/* UnitType.UT_Angle*/, thePattern.GetFillGrid(0).Angle, false/*, false*/);
             }
         }
 
@@ -86,7 +90,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                 if (thePattern == null)
                     return null;
 
-                return UnitFormatUtils.Format(projectUnits, UnitType.UT_Length, thePattern.GetFillGrid(0).Offset, false, false);
+                return UnitFormatUtils.Format(projectUnits, SpecTypeId.Length /*UnitType.UT_Length*/, thePattern.GetFillGrid(0).Offset, false/*, false*/);
             }
         }
 
@@ -99,7 +103,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                 if (thePattern == null)
                     return null;
 
-                return UnitFormatUtils.Format(projectUnits, UnitType.UT_Length, thePattern.GetFillGrid(1).Offset, false, false);
+                return UnitFormatUtils.Format(projectUnits, SpecTypeId.Length/*UnitType.UT_Length*/, thePattern.GetFillGrid(1).Offset, false/*, false*/);
             }
         }
 
@@ -122,6 +126,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
         }
 
         private bool itsDeletedStatus = false;
+
         /// <summary>
         /// Throws exception if setting to true and IsDeleteable is false
         /// </summary>
@@ -136,8 +141,8 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
                     System.Diagnostics.Debug.WriteLine(StyleName + " : StyleToBeDeleted set to -> " + itsDeletedStatus.ToString());
                 }
                 else
-                    if(value == true)
-                        throw new InvalidOperationException("Cannot delete the style: " + this.StyleName);
+                    if (value == true)
+                    throw new InvalidOperationException("Cannot delete the style: " + this.StyleName);
             }
         }
 
@@ -233,7 +238,7 @@ namespace PKHL.ProjectSweeper.FillPatternCleaner
             MaterialUses = 0;
             foreach (Material m in MaterialLib)
             {
-                if (m.CutForegroundPatternId == fpe.Id || 
+                if (m.CutForegroundPatternId == fpe.Id ||
                     m.CutBackgroundPatternId == fpe.Id ||
                     m.SurfaceForegroundPatternId == fpe.Id ||
                     m.SurfaceBackgroundPatternId == fpe.Id)
